@@ -1,14 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./main.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="./main.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
     <title>Todos</title>
 </head>
+
 <body>
-    <h1>Todos!</h1>
+
+
+    <div class="container">
+        <div class="header">
+            <h1>Todos!</h1>
+        </div>
+
+
+        <div class="type-box">
+            <form>
+                <h2>Create a Category:</h2>
+                <input type="text" class="category-input" required>
+                <h2>Add Todo:</h2>
+                <input type="text" class="input-todo" required>
+                <button class="submit-button" type="submit">
+                    <i class="fas fa-plus-square"></i>
+                </button>
+            </form>
+        </div>
+
+
+        <div class="categories">
+            <div class="category-list">
+
+                <!-- <div class="CATEGORIES">
+                    <h2>CATEGORY</h2>
+                    <ul class="TODO-LIST">
+                        <li class="TODO">THE TODO</li>
+                    </ul>
+                </div> -->
+
+            </div>
+        </div>
+
+
+        
+    </div>
+
+
+
+
+
 
     <script src="./main.js"></script>
 </body>
+
 </html>
