@@ -11,35 +11,91 @@ let initalTodos = [
 //Query Selectors //
 const categoryList = document.querySelector('.category-list');
 const categoryInput = document.querySelector('.category-input');
-
 const todoInput = document.querySelector('.input-todo');
 const todoList = document.querySelector('.todo-list');
-
+const form = document.querySelector('form')
 const submitBtn = document.querySelector('.submit-button');
 
 
 
+
+
 //Static Information//
-let categoryCheck = () => {
+let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
+    // allArray.push(filteredGrocery)
 
-    let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
-    console.log(filteredGrocery)
+let filteredHouse = initalTodos.filter(todo => todo.category === "House")
+    // allArray.push(filteredHouse)
 
-    let filteredHouse = initalTodos.filter(todo => todo.category === "House")
-    console.log(filteredHouse)
+let filteredSchool = initalTodos.filter(todo => todo.category === "School")
+    // allArray.push(filteredSchool)
 
-    let filteredSchool = initalTodos.filter(todo => todo.category === "School")
-    console.log(filteredSchool)
+let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]] //add newlyCreated here manually?
+    console.log(allArray, 'allArray1')
 
-    let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]]
-    console.log(allArray)
+
+let newlyCreated = []
+
+
+let categoryCheck = (formArray) => { //[[{todo}]]
+
+    // let arr = initalTodos.filter(todo => todo.todo === null)
+    // arr.forEach
+
+    
+
+    if (formArray) { 
+        for (let i = 0; i < allArray.length; i++) {
+            let nestedLength = allArray[i].length
+            for (let j = 0; j < nestedLength; j++) {
+                if (allArray[i][j].category.includes(formArray[0].category)) {
+                    console.log('if statement 1')
+                    allArray[i].push(...formArray)
+                    // return allArray
+                } else if (newlyCreated.length > 0) {
+                    for (let n = 0; n < newlyCreated.length; n++) {
+                        let moreNested = newlyCreated[i].length;
+                        // if (moreNested)
+                        for (let p = 0; p < moreNested; p++) {
+                            if (newlyCreated[n][p].category.includes(formArray[0].category)) {
+                                console.log('if statement 2')
+                                return newlyCreated[n].push(formArray)
+                            } else {
+                                console.log('else statement 1', newlyCreated)
+                                newlyCreated.push(formArray)
+                                allArray.push(...newlyCreated)
+                            }
+                            break;
+                        }
+                        break;
+                    }
+                    
+                } else {
+                    console.log('else statement 2', newlyCreated)
+                    newlyCreated.push(formArray)
+                    allArray.push(...newlyCreated)
+                }
+                break;
+            }
+            break;
+        }
+        
+    }
+    
+    console.log(allArray, 'allArray2')
+    
 
     let combinedCategories = allArray.map(arr => createCategories(arr))
-    console.log(combinedCategories)
+    // console.log(combinedCategories)
 
-    return categoryList.innerHTML = combinedCategories
+
+    // combinedCategories.push(newlyCreated)
+
+
+categoryList.innerHTML = [...combinedCategories]
 }
 categoryCheck()
+
 
 
 
@@ -49,10 +105,11 @@ categoryCheck()
 submitBtn.addEventListener('click', (event) => {
     event.preventDefault();
 
-    let filtered = initalTodos.filter(todo => todo.category.includes(categoryInput.value))
-    console.log(filtered)
+   
+    let formArray = initalTodos.filter(todo => todo.category.includes(categoryInput.value))
+    // console.log(filtered)
 
-    if (filtered.length > 0) {
+    if (formArray.length > 0) {
         console.log('matches/push to existing category')
         let todo = {
             id: 1,
@@ -60,15 +117,34 @@ submitBtn.addEventListener('click', (event) => {
             complete: false,
             category: categoryInput.value
         }
-        initalTodos.push(todo)
-        categoryCheck()
-        return console.log(initalTodos)
+        initalTodos.push(todo);
+        let createdArray = [];
+        createdArray.push(todo)
+        categoryCheck(createdArray)
+        form.reset()
 
     } else {
         console.log('doesnt match/create a new category')
+        let newTodo = {
+            id: 2,
+            todo: todoInput.value,
+            complete: false,
+            category: categoryInput.value
+        }
+        initalTodos.push(newTodo)
+        let createdArray = [];
+        createdArray.push(newTodo)
+        categoryCheck(createdArray)
+        form.reset()
 
 
     }
+})
+
+const todoText = document.querySelector('.todo');
+
+todoText.addEventListener('click', (event) => {
+    console.log('clicked', event)
 })
 
 
@@ -101,7 +177,89 @@ function createTodo(arr) {
 
 
 
+//BELOW LIES CODE GRAVEYARD OF GOOD INTENTIONS BUT FAILED ATTEMPTS//
 
+ // let todo = {
+    //     id: 1,
+    //     todo: todoInput.nodeValue,
+    //     complete: false,
+    //     category: categoryInput.value
+    // }
+    // initalTodos.push(todo);
+    // categoryCheck(todo);
+    // form.reset();
+
+
+// let includesArray = []
+    // let doesNotIncludeArray = [];
+
+    // if (todo) {
+    //     for (let i = 0; i < initalTodos.length; i++) {
+    //         if (initalTodos[i].category.includes(todo.category)) {
+    //             console.log('includes it')
+    //             includesArray.push(initalTodos[i])
+    //         } else {
+    //             console.log('it does not include it')
+    //             doesNotIncludeArray.push(initalTodos[i])
+    //         }
+    //     }
+    // }
+
+    // console.log(includesArray)
+    // console.log(doesNotIncludeArray)
+
+
+    // let testArray = []
+    // for (let i = 0; i < initalTodos.length; i++) {
+    //     for (let j = 0; j < initalTodos.length; i++) {
+    //         if (initalTodos[i].category === initalTodos[j].category) {
+    //             testArray.push(initalTodos[i])
+    //         } else {
+    //             console.log('jh')
+    //         }
+    //     }
+    // }
+    // console.log(testArray)
+
+    // let creation = createCategories(includesArray)
+
+    // return categoryList.innerHTML = [...creation]
+
+
+
+
+
+    
+
+    // if (filtered) {
+    //     for (let i = 0; i < filtered.length; i++) {
+    //         if (filtered[0].category.includes(initalTodos[i].category)) {
+    //             initalTodos.push(filtered[0])
+    //         } else {
+    //             let newCategory = createCategories(filtered)
+    //             newlyCreated.push(newCategory)
+    //         }
+    //     }
+    // }
+    // console.log(newlyCreated)
+
+
+
+// let arrayOfCategories = [];
+//     let filteredArray = []
+
+//     for (let i = 0; i < initalTodos.length; i++) {
+//         arrayOfCategories.push(initalTodos[i])
+//         if (filtered) {
+//             filteredArray.push(filtered[i])
+//         }
+//         if (filteredArray) {
+//             if (arrayOfCategories[i].category.includes(filteredArray[i].category)) {
+//                 arrayOfCategories.filter
+//             }
+//         }
+//     }
+//     console.log(arrayOfCategories)
 
 
 
