@@ -31,7 +31,7 @@ let filteredSchool = initalTodos.filter(todo => todo.category === "School")
     // allArray.push(filteredSchool)
 
 let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]] //add newlyCreated here manually?
-    console.log(allArray, 'allArray1')
+    // console.log(allArray, 'allArray1')
 
 
 let newlyCreated = []
@@ -42,47 +42,72 @@ let categoryCheck = (formArray) => { //[[{todo}]]
     // let arr = initalTodos.filter(todo => todo.todo === null)
     // arr.forEach
 
-    
 
-    if (formArray) { 
+    if (formArray) {
         for (let i = 0; i < allArray.length; i++) {
-            let nestedLength = allArray[i].length
-            for (let j = 0; j < nestedLength; j++) {
-                if (allArray[i][j].category.includes(formArray[0].category)) {
-                    console.log('if statement 1')
+            for (let j = 0; j < allArray[i].length; j++) {
+                if (allArray[i].includes(...formArray)) { break }
+                if (allArray[i][j].category === formArray[0].category) {
+                    console.log('first if statement');
                     allArray[i].push(...formArray)
-                    // return allArray
-                } else if (newlyCreated.length > 0) {
-                    for (let n = 0; n < newlyCreated.length; n++) {
-                        let moreNested = newlyCreated[i].length;
-                        // if (moreNested)
-                        for (let p = 0; p < moreNested; p++) {
-                            if (newlyCreated[n][p].category.includes(formArray[0].category)) {
-                                console.log('if statement 2')
-                                return newlyCreated[n].push(formArray)
-                            } else {
-                                console.log('else statement 1', newlyCreated)
-                                newlyCreated.push(formArray)
-                                allArray.push(...newlyCreated)
-                            }
-                            break;
-                        }
-                        break;
-                    }
-                    
                 } else {
-                    console.log('else statement 2', newlyCreated)
-                    newlyCreated.push(formArray)
-                    allArray.push(...newlyCreated)
+                    console.log('did not include')
                 }
-                break;
             }
-            break;
         }
-        
+        let categorized = [];
+        allArray.forEach(arr => {
+            let filtering = arr.filter(todo => todo.category === formArray[0].category);
+            if (filtering.length > 0) {
+                categorized.push(filtering)
+            }
+        })
+        console.log(categorized)
+        if (categorized.length === 0) {
+            allArray.push(formArray)
+        }
     }
     
-    console.log(allArray, 'allArray2')
+
+    // if (formArray) { 
+    //     for (let i = 0; i < allArray.length; i++) {
+    //         let nestedLength = allArray[i].length
+    //         for (let j = 0; j < nestedLength; j++) {
+    //             if (allArray[i][j].category.includes(formArray[0].category)) {
+    //                 console.log('if statement 1')
+    //                 allArray[i].push(...formArray)
+    //                 // return allArray
+    //             } else if (newlyCreated.length > 0) {
+    //                 for (let n = 0; n < newlyCreated.length; n++) {
+    //                     let moreNested = newlyCreated[i].length;
+    //                     // if (moreNested)
+    //                     for (let p = 0; p < moreNested; p++) {
+    //                         if (newlyCreated[n][p].category.includes(formArray[0].category)) {
+    //                             console.log('if statement 2')
+    //                             return newlyCreated[n].push(formArray)
+    //                         } else {
+    //                             console.log('else statement 1', newlyCreated)
+    //                             newlyCreated.push(formArray)
+    //                             allArray.push(...newlyCreated)
+    //                         }
+    //                         break;
+    //                     }
+    //                     break;
+    //                 }
+                    
+    //             } else {
+    //                 console.log('else statement 2', newlyCreated)
+    //                 newlyCreated.push(formArray)
+    //                 allArray.push(...newlyCreated)
+    //             }
+    //             break;
+    //         }
+    //         break;
+    //     }
+        
+    // }
+    
+    console.log(allArray, 'after all')
     
 
     let combinedCategories = allArray.map(arr => createCategories(arr))
