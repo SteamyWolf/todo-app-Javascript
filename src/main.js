@@ -2,10 +2,10 @@
 //This is the kind of data you would traditionally get from a data base.
 //For now we are just going to mock it.
 let initalTodos = [
-    {id: 1, todo: "Buy milk.", complete: false, category: "Grocery"},
-    {id: 1, todo: "Clean the cat box.", complete: false, category: "House"},
-    {id: 1, todo: "Chips and salsa.", complete: false, category: "Grocery"},
-    {id: 1, todo: "Finish Homework for DGM 3760", complete: false, category: "School"}
+    { id: 1, todo: "Buy milk.", complete: false, category: "Grocery" },
+    { id: 1, todo: "Clean the cat box.", complete: false, category: "House" },
+    { id: 1, todo: "Chips and salsa.", complete: false, category: "Grocery" },
+    { id: 1, todo: "Finish Homework for DGM 3760", complete: false, category: "School" }
 ]
 
 //Query Selectors //
@@ -22,32 +22,20 @@ const submitBtn = document.querySelector('.submit-button');
 
 //Static Information//
 let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
-    // allArray.push(filteredGrocery)
-
 let filteredHouse = initalTodos.filter(todo => todo.category === "House")
-    // allArray.push(filteredHouse)
-
 let filteredSchool = initalTodos.filter(todo => todo.category === "School")
-    // allArray.push(filteredSchool)
-
 let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]] //add newlyCreated here manually?
-    // console.log(allArray, 'allArray1')
-
 
 let newlyCreated = []
 
-
-let categoryCheck = (formArray) => { //[[{todo}]]
-
-    // let arr = initalTodos.filter(todo => todo.todo === null)
-    // arr.forEach
-
+//ONLOAD FUNCTION & CALLED ON SUBMIT
+let categoryCheck = (formArray) => {
 
     if (formArray) {
         for (let i = 0; i < allArray.length; i++) {
             for (let j = 0; j < allArray[i].length; j++) {
                 if (allArray[i].includes(...formArray)) { break }
-                if (allArray[i][j].category === formArray[0].category) {
+                if (allArray[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
                     console.log('first if statement');
                     allArray[i].push(...formArray)
                 } else {
@@ -57,7 +45,7 @@ let categoryCheck = (formArray) => { //[[{todo}]]
         }
         let categorized = [];
         allArray.forEach(arr => {
-            let filtering = arr.filter(todo => todo.category === formArray[0].category);
+            let filtering = arr.filter(todo => todo.category.toLowerCase() === formArray[0].category.toLowerCase());
             if (filtering.length > 0) {
                 categorized.push(filtering)
             }
@@ -67,9 +55,113 @@ let categoryCheck = (formArray) => { //[[{todo}]]
             allArray.push(formArray)
         }
     }
-    
+    console.log(allArray, 'after all')
+    let combinedCategories = allArray.map(arr => {
+        if (arr.length > 0) {
+            return createCategories(arr)
+        }
+    })
 
-    // if (formArray) { 
+    categoryList.innerHTML = [...combinedCategories]
+}
+categoryCheck()
+
+
+
+
+
+
+//Event Listeners//
+submitBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (todoInput.value.length === 0 || categoryInput.value.length === 0) {
+        return alert('You need to fill out both inputs')
+    } else {
+        let formArray = initalTodos.filter(todo => todo.category.toLowerCase().includes(categoryInput.value.toLowerCase()))
+        if (formArray.length > 0) {
+            console.log('matches/push to existing category')
+            let todo = {
+                id: 1,
+                todo: todoInput.value,
+                complete: false,
+                category: categoryInput.value
+            }
+            initalTodos.push(todo);
+            let createdArray = [];
+            createdArray.push(todo)
+            categoryCheck(createdArray)
+            form.reset()
+    
+        } else {
+            console.log('doesnt match/create a new category')
+            let newTodo = {
+                id: 2,
+                todo: todoInput.value,
+                complete: false,
+                category: categoryInput.value
+            }
+            initalTodos.push(newTodo)
+            let createdArray = [];
+            createdArray.push(newTodo)
+            categoryCheck(createdArray)
+            form.reset()
+
+        }
+    }
+})
+
+
+
+//Functionality//
+function createCategories(arr) {
+    const categoryHTML = `
+        <div class="single-category">
+            <h2>${arr[0].category}</h2>
+            <ul class="todo-list">
+                ${createTodo(arr)}
+            </ul>
+        </div>
+    `
+    return [...categoryHTML].join('')
+}
+
+function createTodo(arr) {
+    const todoHTML = arr.map(todo => `
+    <li class="todo" onClick="removeTodo(event)">${todo.todo}</li>
+    `).join('')
+    return todoHTML
+}
+
+function removeTodo(event) {
+    const indexOfElement = [...event.target.parentElement.children].indexOf(event.target)
+    const indexOfParent = [...event.target.parentElement.parentElement.parentElement.children].indexOf(event.target.parentElement.parentElement);
+    console.log(indexOfParent, 'parent')
+    console.log(indexOfElement, 'child')
+
+    for (let i = 0; i < allArray.length; i++) {
+        if (allArray[i].length === 0) {
+            let arrIndex = allArray.indexOf(allArray[i])
+            allArray.splice(arrIndex, 1)
+            break;
+        }
+    }
+    
+    allArray[indexOfParent][indexOfElement].complete = true;
+    allArray[indexOfParent].splice(indexOfElement, 1);
+
+    categoryCheck();
+}
+
+
+
+
+
+
+
+
+//BELOW LIES CODE GRAVEYARD OF GOOD INTENTIONS BUT FAILED ATTEMPTS//
+
+ // if (formArray) { 
     //     for (let i = 0; i < allArray.length; i++) {
     //         let nestedLength = allArray[i].length
     //         for (let j = 0; j < nestedLength; j++) {
@@ -94,7 +186,7 @@ let categoryCheck = (formArray) => { //[[{todo}]]
     //                     }
     //                     break;
     //                 }
-                    
+
     //             } else {
     //                 console.log('else statement 2', newlyCreated)
     //                 newlyCreated.push(formArray)
@@ -104,105 +196,8 @@ let categoryCheck = (formArray) => { //[[{todo}]]
     //         }
     //         break;
     //     }
-        
+
     // }
-    
-    console.log(allArray, 'after all')
-    
-
-    let combinedCategories = allArray.map(arr => createCategories(arr))
-    // console.log(combinedCategories)
-
-
-    // combinedCategories.push(newlyCreated)
-
-
-categoryList.innerHTML = [...combinedCategories]
-}
-categoryCheck()
-
-
-
-
-
-
-//Event Listeners//
-submitBtn.addEventListener('click', (event) => {
-    event.preventDefault();
-
-   
-    let formArray = initalTodos.filter(todo => todo.category.includes(categoryInput.value))
-    // console.log(filtered)
-
-    if (formArray.length > 0) {
-        console.log('matches/push to existing category')
-        let todo = {
-            id: 1,
-            todo: todoInput.value,
-            complete: false,
-            category: categoryInput.value
-        }
-        initalTodos.push(todo);
-        let createdArray = [];
-        createdArray.push(todo)
-        categoryCheck(createdArray)
-        form.reset()
-
-    } else {
-        console.log('doesnt match/create a new category')
-        let newTodo = {
-            id: 2,
-            todo: todoInput.value,
-            complete: false,
-            category: categoryInput.value
-        }
-        initalTodos.push(newTodo)
-        let createdArray = [];
-        createdArray.push(newTodo)
-        categoryCheck(createdArray)
-        form.reset()
-
-
-    }
-})
-
-const todoText = document.querySelector('.todo');
-
-todoText.addEventListener('click', (event) => {
-    console.log('clicked', event)
-})
-
-
-
-
-//Functionality//
-function createCategories(arr) {
-    const categoryHTML = `
-        <div class="single-category">
-            <h2>${arr[0].category}</h2>
-            <ul class="todo-list">
-                ${createTodo(arr)}
-            </ul>
-        </div>
-    `
-   return [...categoryHTML].join('')
-}
-
-function createTodo(arr) {
-    const todoHTML = arr.map(todo => `
-    <li class="todo">${todo.todo}</li>
-    `).join('')
-    return todoHTML
-}
-
-
-
-
-
-
-
-
-//BELOW LIES CODE GRAVEYARD OF GOOD INTENTIONS BUT FAILED ATTEMPTS//
 
  // let todo = {
     //     id: 1,
@@ -254,7 +249,7 @@ function createTodo(arr) {
 
 
 
-    
+
 
     // if (filtered) {
     //     for (let i = 0; i < filtered.length; i++) {
@@ -292,7 +287,7 @@ function createTodo(arr) {
 
 
 // let initalTodosCheck = () => {
-   
+
 //     initalTodos.forEach(todo => categoryCheck(todo))
 
 //     console.log(filtered)
@@ -308,7 +303,7 @@ function createTodo(arr) {
 
 
 
-   
+
     // (filtered.forEach(todo => todo.category.includes(passedInTodo.category)))
 
     // if (filtered.length === 0) {
@@ -334,7 +329,7 @@ function createTodo(arr) {
 //     let todos = initalTodos.map((todo) => {
 //         if (todo.category === 'Grocery') {
 //             let grocery = `
-                
+
 //             `
 //         }
 //     })
@@ -367,7 +362,7 @@ function createTodo(arr) {
 
 // //Functionality//
 // function addCategory(event) {
-    
+
 // }
 
 
