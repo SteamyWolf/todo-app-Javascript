@@ -63,6 +63,7 @@ let categoryCheck = (formArray) => {
     })
 
     categoryList.innerHTML = [...combinedCategories]
+    return categoryList.innerHTML.replace(/,/g, '')
 }
 categoryCheck()
 
@@ -121,7 +122,7 @@ function createCategories(arr) {
                 ${createTodo(arr)}
             </ul>
         </div>
-    `
+    `;
     return [...categoryHTML].join('')
 }
 
@@ -143,7 +144,7 @@ function removeTodo(event) {
             let arrIndex = allArray.indexOf(allArray[i])
             allArray.splice(arrIndex, 1)
             break;
-        }
+        } else { continue }
     }
     
     allArray[indexOfParent][indexOfElement].complete = true;

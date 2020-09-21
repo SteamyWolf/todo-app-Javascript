@@ -56,3 +56,16 @@ body {
     align-items: flex-start;
 }
 
+.single-category {
+    list-style-type: none;
+}
+
+.todo-list {
+    list-style-type: none;
+}
+
+.todo {
+    padding: 10px;
+    list-style-type: none;
+}
+
