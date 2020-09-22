@@ -15,7 +15,8 @@ const todoInput = document.querySelector('.input-todo');
 const todoList = document.querySelector('.todo-list');
 const form = document.querySelector('form')
 const submitBtn = document.querySelector('.submit-button');
-
+const completedDiv = document.querySelector('.completed');
+const completedList = document.querySelector('.completed-list');
 
 
 
@@ -24,9 +25,11 @@ const submitBtn = document.querySelector('.submit-button');
 let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
 let filteredHouse = initalTodos.filter(todo => todo.category === "House")
 let filteredSchool = initalTodos.filter(todo => todo.category === "School")
-let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]] //add newlyCreated here manually?
+let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]]
 
-let newlyCreated = []
+//COMPLETED ARRAY//
+let completed = [];
+
 
 //ONLOAD FUNCTION & CALLED ON SUBMIT
 let categoryCheck = (formArray) => {
@@ -122,7 +125,7 @@ function createCategories(arr) {
                 ${createTodo(arr)}
             </ul>
         </div>
-    `;
+    `
     return [...categoryHTML].join('')
 }
 
@@ -148,9 +151,21 @@ function removeTodo(event) {
     }
     
     allArray[indexOfParent][indexOfElement].complete = true;
-    allArray[indexOfParent].splice(indexOfElement, 1);
+    completed.push(...allArray[indexOfParent].splice(indexOfElement, 1))
+    console.log(completed)
+    displayCompleted(completed)
 
     categoryCheck();
+}
+
+function displayCompleted(arr) {
+    const li = arr.map(todo => `
+        <li class="completed-todo">
+            ${todo.todo}
+        </li>
+    `).join('')
+    console.log(li)
+    completedList.innerHTML = li
 }
 
 
