@@ -22,6 +22,17 @@ const completedList = document.querySelector('.completed-list');
 
 
 //Static Information//
+localStorage.setItem('todos', JSON.stringify(initalTodos));
+const data = JSON.parse(localStorage.getItem('todos'))
+console.log(data)
+// let todosArray = localStorage.getItem('todos')
+//   ? JSON.parse(localStorage.getItem('todos'))
+//   : []
+// localStorage.setItem('todos', JSON.stringify(initalTodos))
+
+
+
+
 let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
 let filteredHouse = initalTodos.filter(todo => todo.category === "House")
 let filteredSchool = initalTodos.filter(todo => todo.category === "School")
@@ -39,7 +50,6 @@ let categoryCheck = (formArray) => {
             for (let j = 0; j < allArray[i].length; j++) {
                 if (allArray[i].includes(...formArray)) { break }
                 if (allArray[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
-                    console.log('first if statement');
                     allArray[i].push(...formArray)
                 } else {
                     console.log('did not include')
@@ -58,6 +68,7 @@ let categoryCheck = (formArray) => {
             allArray.push(formArray)
         }
     }
+    
     console.log(allArray, 'after all')
     let combinedCategories = allArray.map(arr => {
         if (arr.length > 0) {
@@ -131,7 +142,10 @@ function createCategories(arr) {
 
 function createTodo(arr) {
     const todoHTML = arr.map(todo => `
-    <li class="todo" onClick="removeTodo(event)">${todo.todo}</li>
+    <li class="todo" onClick="removeTodo(event)">
+        <i class="fas fa-times-circle" id="circle-x"></i>
+        ${todo.todo}
+    </li>
     `).join('')
     return todoHTML
 }
@@ -152,7 +166,7 @@ function removeTodo(event) {
     
     allArray[indexOfParent][indexOfElement].complete = true;
     completed.push(...allArray[indexOfParent].splice(indexOfElement, 1))
-    console.log(completed)
+
     displayCompleted(completed)
 
     categoryCheck();
