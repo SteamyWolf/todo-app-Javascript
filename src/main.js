@@ -17,47 +17,44 @@ const form = document.querySelector('form')
 const submitBtn = document.querySelector('.submit-button');
 const completedDiv = document.querySelector('.completed');
 const completedList = document.querySelector('.completed-list');
+const clearBtn = document.querySelector('.clearCompleted');
 
 
 
 
 //Static Information//
-localStorage.setItem('todos', JSON.stringify(initalTodos));
-const data = JSON.parse(localStorage.getItem('todos'))
-console.log(data)
-// let todosArray = localStorage.getItem('todos')
-//   ? JSON.parse(localStorage.getItem('todos'))
-//   : []
-// localStorage.setItem('todos', JSON.stringify(initalTodos))
-
-
-
-
 let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
 let filteredHouse = initalTodos.filter(todo => todo.category === "House")
 let filteredSchool = initalTodos.filter(todo => todo.category === "School")
 let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]]
 
-//COMPLETED ARRAY//
-let completed = [];
+let data = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : allArray;
+localStorage.setItem('todos', JSON.stringify(data))
 
+console.log(data)
+console.log(allArray)
+
+//COMPLETED ARRAY//
+let completed = localStorage.getItem('completed') ? JSON.parse(localStorage.getItem('completed')) : [];
+localStorage.setItem('completed', JSON.stringify(completed))
 
 //ONLOAD FUNCTION & CALLED ON SUBMIT
 let categoryCheck = (formArray) => {
 
+    // let data = [];
+
     if (formArray) {
-        for (let i = 0; i < allArray.length; i++) {
-            for (let j = 0; j < allArray[i].length; j++) {
-                if (allArray[i].includes(...formArray)) { break }
-                if (allArray[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
-                    allArray[i].push(...formArray)
-                } else {
-                    console.log('did not include')
+        for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < data[i].length; j++) {
+                if (data[i].includes(...formArray)) { break }
+                if (data[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
+                    data[i].push(...formArray);
+                    localStorage.setItem('todos', JSON.stringify(data));
                 }
             }
         }
         let categorized = [];
-        allArray.forEach(arr => {
+        data.forEach(arr => {
             let filtering = arr.filter(todo => todo.category.toLowerCase() === formArray[0].category.toLowerCase());
             if (filtering.length > 0) {
                 categorized.push(filtering)
@@ -65,12 +62,12 @@ let categoryCheck = (formArray) => {
         })
         console.log(categorized)
         if (categorized.length === 0) {
-            allArray.push(formArray)
+            data.push(formArray);
+            localStorage.setItem('todos', JSON.stringify(data))
         }
     }
-    
-    console.log(allArray, 'after all')
-    let combinedCategories = allArray.map(arr => {
+
+    let combinedCategories = data.map(arr => {
         if (arr.length > 0) {
             return createCategories(arr)
         }
@@ -102,6 +99,7 @@ submitBtn.addEventListener('click', (event) => {
                 category: categoryInput.value
             }
             initalTodos.push(todo);
+            // localStorage.setItem('todos', JSON.stringify(todo))
             let createdArray = [];
             createdArray.push(todo)
             categoryCheck(createdArray)
@@ -123,6 +121,13 @@ submitBtn.addEventListener('click', (event) => {
 
         }
     }
+})
+
+
+clearBtn.addEventListener('click', event => {
+    completed = [];
+    localStorage.setItem('completed', JSON.stringify(completed))
+    document.location.reload();
 })
 
 
@@ -156,16 +161,21 @@ function removeTodo(event) {
     console.log(indexOfParent, 'parent')
     console.log(indexOfElement, 'child')
 
-    for (let i = 0; i < allArray.length; i++) {
-        if (allArray[i].length === 0) {
-            let arrIndex = allArray.indexOf(allArray[i])
-            allArray.splice(arrIndex, 1)
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].length === 0) {
+            let arrIndex = data.indexOf(data[i]);
+            data.splice(arrIndex, 1);
+            localStorage.setItem('todos', JSON.stringify(data))
+            localStorage.setItem('completed', JSON.stringify(completed))
             break;
         } else { continue }
     }
-    
-    allArray[indexOfParent][indexOfElement].complete = true;
-    completed.push(...allArray[indexOfParent].splice(indexOfElement, 1))
+    console.log(data)
+    data[indexOfParent][indexOfElement].complete = true;
+    completed.push(...data[indexOfParent].splice(indexOfElement, 1))
+    localStorage.setItem('todos', JSON.stringify(data));
+    localStorage.setItem('completed', JSON.stringify(completed))
+
 
     displayCompleted(completed)
 
@@ -178,9 +188,9 @@ function displayCompleted(arr) {
             ${todo.todo}
         </li>
     `).join('')
-    console.log(li)
     completedList.innerHTML = li
 }
+displayCompleted(completed)
 
 
 
@@ -190,6 +200,46 @@ function displayCompleted(arr) {
 
 
 //BELOW LIES CODE GRAVEYARD OF GOOD INTENTIONS BUT FAILED ATTEMPTS//
+
+
+    
+
+    // if (!formArray) {
+    //     localStorage.setItem('todos', JSON.stringify(allArray));
+    //     data.push(...JSON.parse(localStorage.getItem('todos')))
+    // }
+
+//     let itemsArray = localStorage.getItem('items')
+//   ? JSON.parse(localStorage.getItem('items'))
+//   : []
+
+    // if (localStorage.getItem('todos')) {
+    //     JSON.parse(localStorage.getItem('todos'));
+    // } else {
+    //     allArray = allArray;
+    // }
+    // console.log(allArray, 'after all the filtering')
+
+
+    // let data = [];
+
+    // if (!formArray) {
+    //     if (localStorage.getItem('todos')) {
+    //         data.push(...JSON.parse(localStorage.getItem('todos')))
+    //     } else {
+    //         localStorage.setItem('todos', JSON.stringify(allArray));
+    //         data.push(...JSON.parse(localStorage.getItem('todos')))
+    //     }
+    // } else {
+        
+    // }
+
+    // localStorage.setItem('todos', JSON.stringify(data))
+    // console.log(data)
+
+
+    // let data = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : allArray;
+
 
  // if (formArray) { 
     //     for (let i = 0; i < allArray.length; i++) {

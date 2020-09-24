@@ -96,6 +96,8 @@ body {
 }
 
 .completed {
+    display: flex;
+    flex-direction: column;
     border: 1px solid black;
     border-radius: 10px;
     margin-top: 30px;
@@ -113,5 +115,24 @@ body {
     list-style-type: none;
     padding: 10px;
     color: purple;
+}
+
+.clearCompleted {
+    margin: 0 auto;
+    width: 100px;
+    font-family: 'Ubuntu', sans-serif;
+    margin-bottom: 10px;
+    height: 30px;
+    background-color: purple;
+    color: white;
+    border-radius: 10px;
+    border: 1px solid white;
+}
+
+.clearCompleted:hover {
+    background-color: white;
+    color: purple;
+    border: 1px solid purple;
+    transition: all 0.3s ease;
 }
 
