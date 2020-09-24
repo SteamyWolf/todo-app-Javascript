@@ -31,18 +31,12 @@ let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]]
 let data = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : allArray;
 localStorage.setItem('todos', JSON.stringify(data))
 
-console.log(data)
-console.log(allArray)
-
 //COMPLETED ARRAY//
 let completed = localStorage.getItem('completed') ? JSON.parse(localStorage.getItem('completed')) : [];
 localStorage.setItem('completed', JSON.stringify(completed))
 
 //ONLOAD FUNCTION & CALLED ON SUBMIT
 let categoryCheck = (formArray) => {
-
-    // let data = [];
-
     if (formArray) {
         for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data[i].length; j++) {
@@ -91,7 +85,6 @@ submitBtn.addEventListener('click', (event) => {
     } else {
         let formArray = initalTodos.filter(todo => todo.category.toLowerCase().includes(categoryInput.value.toLowerCase()))
         if (formArray.length > 0) {
-            console.log('matches/push to existing category')
             let todo = {
                 id: 1,
                 todo: todoInput.value,
@@ -99,14 +92,12 @@ submitBtn.addEventListener('click', (event) => {
                 category: categoryInput.value
             }
             initalTodos.push(todo);
-            // localStorage.setItem('todos', JSON.stringify(todo))
             let createdArray = [];
             createdArray.push(todo)
             categoryCheck(createdArray)
             form.reset()
     
         } else {
-            console.log('doesnt match/create a new category')
             let newTodo = {
                 id: 2,
                 todo: todoInput.value,
@@ -158,9 +149,6 @@ function createTodo(arr) {
 function removeTodo(event) {
     const indexOfElement = [...event.target.parentElement.children].indexOf(event.target)
     const indexOfParent = [...event.target.parentElement.parentElement.parentElement.children].indexOf(event.target.parentElement.parentElement);
-    console.log(indexOfParent, 'parent')
-    console.log(indexOfElement, 'child')
-
     for (let i = 0; i < data.length; i++) {
         if (data[i].length === 0) {
             let arrIndex = data.indexOf(data[i]);
@@ -170,15 +158,11 @@ function removeTodo(event) {
             break;
         } else { continue }
     }
-    console.log(data)
     data[indexOfParent][indexOfElement].complete = true;
     completed.push(...data[indexOfParent].splice(indexOfElement, 1))
     localStorage.setItem('todos', JSON.stringify(data));
     localStorage.setItem('completed', JSON.stringify(completed))
-
-
     displayCompleted(completed)
-
     categoryCheck();
 }
 
