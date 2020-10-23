@@ -1,12 +1,3 @@
-//inital data array. DO NOT EDIT OR REMOVE - Use these as the inital app state.
-//This is the kind of data you would traditionally get from a data base.
-//For now we are just going to mock it.
-let initalTodos = [
-    { id: 1, todo: "Buy milk.", complete: false, category: "Grocery" },
-    { id: 1, todo: "Clean the cat box.", complete: false, category: "House" },
-    { id: 1, todo: "Chips and salsa.", complete: false, category: "Grocery" },
-    { id: 1, todo: "Finish Homework for DGM 3760", complete: false, category: "School" }
-]
 
 //Query Selectors //
 const categoryList = document.querySelector('.category-list');
@@ -18,32 +9,104 @@ const submitBtn = document.querySelector('.submit-button');
 const completedDiv = document.querySelector('.completed');
 const completedList = document.querySelector('.completed-list');
 const clearBtn = document.querySelector('.clearCompleted');
+// const todo = document.querySelector('.todo');
+
+
+// const fetchTodos = async () => {
+//     fetch('http://localhost:3000/addedTodos', {
+//         method: 'GET'
+//     })
+//         .then((response) => {
+//             return response.json()
+//         })
+//         .then((todos) => {
+//             let initalTodos = todos.map(todo => {
+//                 return {
+//                     id: todo.id,
+//                     todo: todo.todo,
+//                     complete: todo.complete,
+//                     category: todo.category
+//                 }
+//             })
+//         })
+// }
+// fetchTodos();
+
+// categoryCheck()
+
+let localData;
+
+async function getinitalTodos() {
+    const response = await fetch('http://localhost:3000/initialTodos');
+    const todos = await response.json();
+    return todos.map(todo => {
+        return {
+            id: todo.id,
+            todo: todo.todo,
+            complete: todo.complete,
+            category: todo.category
+        }
+    });
+}
+
+getinitalTodos().then(todos => {
+    const formatedTodos = formatTodos(todos);
+    localData = formatedTodos;
+    categoryCheck('', formatedTodos);
+});
+
+function formatTodos(initalTodos) {
+    let finalArray = [];
+    //find unique categories and put them in an array
+    let categories = [...new Set(initalTodos.map(todo => todo.category))]
+    for (let i = 0; i < categories.length; i++) {
+        //push an empty array to push into the finalArray array
+        const currentArray = []
+        //this gets all the todos for the current category
+        const currentCatTodos = initalTodos.filter(todo => {
+            return todo.category == categories[i]
+        })
+        //loop over all the todos for the current category and push them into the currentarray
+        currentCatTodos.forEach(todo => {
+            currentArray.push(todo)
+        })
+        //push the current array into the final array
+        finalArray.push(currentArray)
+    }
+    return finalArray;
+}
+
+
+//SAVE---------------------------------------------------------------------------------------------------------------------------------------------------------------
+// let data = initalTodos.map(todo => [todo]);
 
 
 
 
-//Static Information//
-let filteredGrocery = initalTodos.filter(todo => todo.category === "Grocery")
-let filteredHouse = initalTodos.filter(todo => todo.category === "House")
-let filteredSchool = initalTodos.filter(todo => todo.category === "School")
-let allArray = [[...filteredGrocery], [...filteredHouse], [...filteredSchool]]
-
-let data = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : allArray;
-localStorage.setItem('todos', JSON.stringify(data))
+// let data = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : allArray;
+// localStorage.setItem('todos', JSON.stringify(data))
 
 //COMPLETED ARRAY//
-let completed = localStorage.getItem('completed') ? JSON.parse(localStorage.getItem('completed')) : [];
-localStorage.setItem('completed', JSON.stringify(completed))
+// let completed = localStorage.getItem('completed') ? JSON.parse(localStorage.getItem('completed')) : [];
+// localStorage.setItem('completed', JSON.stringify(completed))
+let completed = [];
 
 //ONLOAD FUNCTION & CALLED ON SUBMIT
-let categoryCheck = (formArray) => {
+function categoryCheck(formArray, data) {
     if (formArray) {
+        //WHEN THE USER ADDS A NEW TODO W/ CATEGORY THIS HAPPENS:
         for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data[i].length; j++) {
                 if (data[i].includes(...formArray)) { break }
                 if (data[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
                     data[i].push(...formArray);
-                    localStorage.setItem('todos', JSON.stringify(data));
+                    // localStorage.setItem('todos', JSON.stringify(data));
+                    console.log({ ...formArray })
+                    fetch('http://localhost:3000/initialTodos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(...formArray)
+                    })
                 }
             }
         }
@@ -57,10 +120,16 @@ let categoryCheck = (formArray) => {
         console.log(categorized)
         if (categorized.length === 0) {
             data.push(formArray);
-            localStorage.setItem('todos', JSON.stringify(data))
+            // localStorage.setItem('todos', JSON.stringify(data))
+            fetch('http://localhost:3000/initialTodos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(...formArray)
+            })
         }
     }
 
+    //WHEN THE APP FIRST STARTS THIS HAPPENS:
     let combinedCategories = data.map(arr => {
         if (arr.length > 0) {
             return createCategories(arr)
@@ -70,7 +139,7 @@ let categoryCheck = (formArray) => {
     categoryList.innerHTML = [...combinedCategories]
     return categoryList.innerHTML.replace(/,/g, '')
 }
-categoryCheck()
+// categoryCheck('', data)
 
 
 
@@ -83,95 +152,84 @@ submitBtn.addEventListener('click', (event) => {
     if (todoInput.value.length === 0 || categoryInput.value.length === 0) {
         return alert('You need to fill out both inputs')
     } else {
-        let formArray = initalTodos.filter(todo => todo.category.toLowerCase().includes(categoryInput.value.toLowerCase()))
-        if (formArray.length > 0) {
-            let todo = {
-                id: 1,
-                todo: todoInput.value,
-                complete: false,
-                category: categoryInput.value
-            }
-            initalTodos.push(todo);
-            let createdArray = [];
-            createdArray.push(todo)
-            categoryCheck(createdArray)
-            form.reset()
-    
-        } else {
-            let newTodo = {
-                id: 2,
-                todo: todoInput.value,
-                complete: false,
-                category: categoryInput.value
-            }
-            initalTodos.push(newTodo)
-            let createdArray = [];
-            createdArray.push(newTodo)
-            categoryCheck(createdArray)
-            form.reset()
-
+        let todo = {
+            id: 1,
+            todo: todoInput.value,
+            complete: false,
+            category: categoryInput.value
         }
+        // initalTodos.push(todo);
+        let createdArray = [];
+        createdArray.push(todo)
+        categoryCheck(createdArray, localData)
+        form.reset()
     }
-})
+}
+)
 
-
+//Clear Button
 clearBtn.addEventListener('click', event => {
     completed = [];
-    localStorage.setItem('completed', JSON.stringify(completed))
+    // localStorage.setItem('completed', JSON.stringify(completed))
     document.location.reload();
-})
+});
 
 
 
 //Functionality//
 function createCategories(arr) {
     const categoryHTML = `
-        <div class="single-category">
-            <h2>${arr[0].category}</h2>
-            <ul class="todo-list">
-                ${createTodo(arr)}
-            </ul>
-        </div>
-    `
+                <div class="single-category">
+                    <h2>${arr[0].category}</h2>
+                    <ul class="todo-list">
+                        ${createTodo(arr)}
+                    </ul>
+                </div>
+            `
     return [...categoryHTML].join('')
 }
 
 function createTodo(arr) {
     const todoHTML = arr.map(todo => `
-    <li class="todo" onClick="removeTodo(event)">
-        <i class="fas fa-times-circle" id="circle-x"></i>
-        ${todo.todo}
-    </li>
-    `).join('')
+            <li class="todo" onclick="removeTodo(event)">
+                <i class="fas fa-times-circle" id="circle-x"></i>
+                ${todo.todo}
+            </li>
+            `).join('')
     return todoHTML
 }
 
 function removeTodo(event) {
     const indexOfElement = [...event.target.parentElement.children].indexOf(event.target)
     const indexOfParent = [...event.target.parentElement.parentElement.parentElement.children].indexOf(event.target.parentElement.parentElement);
-    for (let i = 0; i < data.length; i++) {
-        if (data[i].length === 0) {
-            let arrIndex = data.indexOf(data[i]);
-            data.splice(arrIndex, 1);
-            localStorage.setItem('todos', JSON.stringify(data))
-            localStorage.setItem('completed', JSON.stringify(completed))
+    for (let i = 0; i < localData.length; i++) {
+        if (localData[i].length === 0) {
+            let arrIndex = localData.indexOf(localData[i]);
+            localData.splice(arrIndex, 1);
+            // localStorage.setItem('todos', JSON.stringify(data))
+            // localStorage.setItem('completed', JSON.stringify(completed))
             break;
         } else { continue }
     }
-    data[indexOfParent][indexOfElement].complete = true;
-    completed.push(...data[indexOfParent].splice(indexOfElement, 1))
-    localStorage.setItem('todos', JSON.stringify(data));
-    localStorage.setItem('completed', JSON.stringify(completed))
+    localData[indexOfParent][indexOfElement].complete = true;
+    completed.push(...localData[indexOfParent].splice(indexOfElement, 1))
+    // localStorage.setItem('todos', JSON.stringify(data));
+    // localStorage.setItem('completed', JSON.stringify(completed))
+    fetch('http://localhost:3000/addedTodos', {
+        method: 'DELETE'
+    })
     displayCompleted(completed)
-    categoryCheck();
+    categoryCheck('', localData);
 }
+
+
 
 function displayCompleted(arr) {
     const li = arr.map(todo => `
-        <li class="completed-todo">
-            ${todo.todo}
-        </li>
-    `).join('')
+                <li class="completed-todo">
+                    ${todo.todo}
+                </li>
+            `).join('')
     completedList.innerHTML = li
 }
 displayCompleted(completed)
@@ -183,10 +241,37 @@ displayCompleted(completed)
 
 
 
+
+
+
+
+
 //BELOW LIES CODE GRAVEYARD OF GOOD INTENTIONS BUT FAILED ATTEMPTS//
 
+// let initialFiltering = initalTodos.map(todo => [todo]);
 
-    
+//     let filtered = [];
+//     for (let arr in initalTodos) {
+//         for (let filter in initialFiltering) {
+//             if (!initialFiltering[arr][filter]) { break }
+//             if (initalTodos[arr].category == initialFiltering[arr][filter].category) {
+//                 let takenOut = initialFiltering[arr].filter(filter => filter.category === initalTodos[arr].category)
+//                 if (filtered[0]) {
+//                     for (let deep in filtered) {
+//                         if (takenOut[0].category === filtered[deep].category) {
+//                             filtered[deep].push(...takenOut)
+//                         } else if (filtered[deep].includes(takenOut[0])) { break }
+//                         else { filtered.push(takenOut) }
+//                     }
+//                 } else {
+//                     filtered.push(takenOut)
+//                 }
+//             }
+//         }
+//     }
+
+//     return filtered;
+
 
     // if (!formArray) {
     //     localStorage.setItem('todos', JSON.stringify(allArray));
@@ -215,7 +300,7 @@ displayCompleted(completed)
     //         data.push(...JSON.parse(localStorage.getItem('todos')))
     //     }
     // } else {
-        
+
     // }
 
     // localStorage.setItem('todos', JSON.stringify(data))
@@ -455,6 +540,3 @@ displayCompleted(completed)
 //     //APPEND IT TO THE UL
 //     todoList.appendChild(todoDiv)
 // }
-
-
-
