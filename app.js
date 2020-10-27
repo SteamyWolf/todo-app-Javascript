@@ -19,6 +19,9 @@ app.use(express.json());
 
 
 //ROUTES
+app.get('/', (req, res) => {
+    res.render('/src/index.html')
+})
 app.use('/initialTodos', initialTodosRoutes);
 
 app.use('/addedTodos', addedTodosRoutes);
