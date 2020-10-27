@@ -73,7 +73,7 @@ function categoryCheck(formArray, data) {
                 if (data[i].includes(...formArray)) { break }
                 if (data[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
                     data[i].push(...formArray);
-                    fetch('http://localhost:3000/initialTodos', {
+                    fetch('https://todo-app-wyatt.herokuapp.com/initialTodos', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(...formArray)
@@ -91,7 +91,7 @@ function categoryCheck(formArray, data) {
         console.log(categorized)
         if (categorized.length === 0) {
             data.push(formArray);
-            fetch('http://localhost:3000/initialTodos', {
+            fetch('https://todo-app-wyatt.herokuapp.com/initialTodos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(...formArray)
@@ -137,7 +137,7 @@ submitBtn.addEventListener('click', (event) => {
 clearBtn.addEventListener('click', async (event) => {
     console.log('Arrived at button claer')
     let deleteRequirements = JSON.stringify({id: 1})
-    await fetch('http://localhost:3000/addedTodos', {
+    await fetch('https://todo-app-wyatt.herokuapp.com/addedTodos', {
         method: 'DELETE',
         headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
         body: deleteRequirements
@@ -177,7 +177,7 @@ async function removeTodo(event) {
     const indexOfParent = [...event.target.parentElement.parentElement.parentElement.children].indexOf(event.target.parentElement.parentElement);
     let deleteBody = localData[indexOfParent][indexOfElement]._id
     console.log(JSON.stringify({_id: deleteBody}))
-    await fetch('http://localhost:3000/initialTodos', {
+    await fetch('https://todo-app-wyatt.herokuapp.com/initialTodos', {
         method: 'DELETE',
         headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
         body: JSON.stringify({_id: deleteBody})
@@ -185,7 +185,7 @@ async function removeTodo(event) {
     localData[indexOfParent][indexOfElement].complete = true;
     let completedTodo = localData[indexOfParent].splice(indexOfElement, 1)
     completed.push(...completedTodo);
-    await fetch('http://localhost:3000/addedTodos', {
+    await fetch('https://todo-app-wyatt.herokuapp.com/addedTodos', {
         method: 'POST',
         headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
         body: JSON.stringify(...completedTodo)

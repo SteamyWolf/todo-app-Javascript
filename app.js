@@ -19,7 +19,7 @@ app.use(express.json());
 
 
 //ROUTES
-app.get('/', (req, res) => {
+app.get('/hi', (req, res) => {
     res.send('Working?')
 })
 app.use('/initialTodos', initialTodosRoutes);
