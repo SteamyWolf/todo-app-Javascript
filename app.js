@@ -3,21 +3,25 @@ const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
 require('dotenv/config')
+const initialTodosRoutes = require('./backend/routes/InitialTodosRoutes');
+const addedTodosRoutes = require('./backend/routes/addedTodosRoutes');
+
+
 
 const port = process.env.PORT || 3000
-
-//MIDDLEWARE: Functions that execute when routes are hit
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 app.use(cors());
 
+//MIDDLEWARE: Functions that execute when routes are hit
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
+
 //ROUTES
-const initialTodosRoutes = require('./backend/routes/InitialTodosRoutes');
 app.use('/initialTodos', initialTodosRoutes);
 
-const addedTodosRoutes = require('./backend/routes/addedTodosRoutes');
 app.use('/addedTodos', addedTodosRoutes);
-
 
 
 //CONNECTION TO DB

@@ -12,48 +12,35 @@ const clearBtn = document.querySelector('.clearCompleted');
 // const todo = document.querySelector('.todo');
 
 
-// const fetchTodos = async () => {
-//     fetch('http://localhost:3000/addedTodos', {
-//         method: 'GET'
-//     })
-//         .then((response) => {
-//             return response.json()
-//         })
-//         .then((todos) => {
-//             let initalTodos = todos.map(todo => {
-//                 return {
-//                     id: todo.id,
-//                     todo: todo.todo,
-//                     complete: todo.complete,
-//                     category: todo.category
-//                 }
-//             })
-//         })
-// }
-// fetchTodos();
 
-// categoryCheck()
 
 let localData;
+let completed = [];
 
 async function getinitalTodos() {
     const response = await fetch('http://localhost:3000/initialTodos');
     const todos = await response.json();
-    return todos.map(todo => {
-        return {
-            id: todo.id,
-            todo: todo.todo,
-            complete: todo.complete,
-            category: todo.category
-        }
-    });
+    return todos;
 }
+
 
 getinitalTodos().then(todos => {
     const formatedTodos = formatTodos(todos);
     localData = formatedTodos;
     categoryCheck('', formatedTodos);
 });
+
+async function getCompletedTodos() {
+    const response  = await fetch('http://localhost:3000/addedTodos');
+    const completedTodos = response.json();
+    return completedTodos
+}
+
+getCompletedTodos().then(completedTodos => {
+    console.log(completedTodos)
+    completed.push(...completedTodos);
+    return displayCompleted(completedTodos)
+})
 
 function formatTodos(initalTodos) {
     let finalArray = [];
@@ -77,20 +64,6 @@ function formatTodos(initalTodos) {
 }
 
 
-//SAVE---------------------------------------------------------------------------------------------------------------------------------------------------------------
-// let data = initalTodos.map(todo => [todo]);
-
-
-
-
-// let data = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : allArray;
-// localStorage.setItem('todos', JSON.stringify(data))
-
-//COMPLETED ARRAY//
-// let completed = localStorage.getItem('completed') ? JSON.parse(localStorage.getItem('completed')) : [];
-// localStorage.setItem('completed', JSON.stringify(completed))
-let completed = [];
-
 //ONLOAD FUNCTION & CALLED ON SUBMIT
 function categoryCheck(formArray, data) {
     if (formArray) {
@@ -100,8 +73,6 @@ function categoryCheck(formArray, data) {
                 if (data[i].includes(...formArray)) { break }
                 if (data[i][j].category.toLowerCase() === formArray[0].category.toLowerCase()) {
                     data[i].push(...formArray);
-                    // localStorage.setItem('todos', JSON.stringify(data));
-                    console.log({ ...formArray })
                     fetch('http://localhost:3000/initialTodos', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -120,7 +91,6 @@ function categoryCheck(formArray, data) {
         console.log(categorized)
         if (categorized.length === 0) {
             data.push(formArray);
-            // localStorage.setItem('todos', JSON.stringify(data))
             fetch('http://localhost:3000/initialTodos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -139,10 +109,6 @@ function categoryCheck(formArray, data) {
     categoryList.innerHTML = [...combinedCategories]
     return categoryList.innerHTML.replace(/,/g, '')
 }
-// categoryCheck('', data)
-
-
-
 
 
 
@@ -158,7 +124,7 @@ submitBtn.addEventListener('click', (event) => {
             complete: false,
             category: categoryInput.value
         }
-        // initalTodos.push(todo);
+        // localData.push(todo);
         let createdArray = [];
         createdArray.push(todo)
         categoryCheck(createdArray, localData)
@@ -168,7 +134,14 @@ submitBtn.addEventListener('click', (event) => {
 )
 
 //Clear Button
-clearBtn.addEventListener('click', event => {
+clearBtn.addEventListener('click', async (event) => {
+    console.log('Arrived at button claer')
+    let deleteRequirements = JSON.stringify({id: 1})
+    await fetch('http://localhost:3000/addedTodos', {
+        method: 'DELETE',
+        headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
+        body: deleteRequirements
+    })
     completed = [];
     // localStorage.setItem('completed', JSON.stringify(completed))
     document.location.reload();
@@ -199,9 +172,25 @@ function createTodo(arr) {
     return todoHTML
 }
 
-function removeTodo(event) {
+async function removeTodo(event) {
     const indexOfElement = [...event.target.parentElement.children].indexOf(event.target)
     const indexOfParent = [...event.target.parentElement.parentElement.parentElement.children].indexOf(event.target.parentElement.parentElement);
+    let deleteBody = localData[indexOfParent][indexOfElement]._id
+    console.log(JSON.stringify({_id: deleteBody}))
+    await fetch('http://localhost:3000/initialTodos', {
+        method: 'DELETE',
+        headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
+        body: JSON.stringify({_id: deleteBody})
+    })
+    localData[indexOfParent][indexOfElement].complete = true;
+    let completedTodo = localData[indexOfParent].splice(indexOfElement, 1)
+    completed.push(...completedTodo);
+    await fetch('http://localhost:3000/addedTodos', {
+        method: 'POST',
+        headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
+        body: JSON.stringify(...completedTodo)
+    })
+
     for (let i = 0; i < localData.length; i++) {
         if (localData[i].length === 0) {
             let arrIndex = localData.indexOf(localData[i]);
@@ -211,13 +200,6 @@ function removeTodo(event) {
             break;
         } else { continue }
     }
-    localData[indexOfParent][indexOfElement].complete = true;
-    completed.push(...localData[indexOfParent].splice(indexOfElement, 1))
-    // localStorage.setItem('todos', JSON.stringify(data));
-    // localStorage.setItem('completed', JSON.stringify(completed))
-    fetch('http://localhost:3000/addedTodos', {
-        method: 'DELETE'
-    })
     displayCompleted(completed)
     categoryCheck('', localData);
 }

@@ -22,10 +22,20 @@ router.post('/', async (req, res) => {
         category: req.body.category
     })
     try {
-        const todoSave = todo.save();
-        res.json(todoSave)
+        await todo.save();
+        const todos = await InitialTodo.find();
+        res.json(todos)
     } catch (error) {
         console.log({message: 'Did not save correctly'})
+    }
+});
+
+router.delete('/', async (req, res) => {
+    try {
+        const deletedTodo = await InitialTodo.findOneAndDelete({_id: req.body._id})
+        res.json(deletedTodo)
+    } catch (error) {
+        console.log({message: error})
     }
 })
 

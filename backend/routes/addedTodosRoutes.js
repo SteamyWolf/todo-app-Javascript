@@ -27,6 +27,18 @@ router.post('/', async (req, res) => {
     } catch (error) {
         console.log({message: 'Did not save correctly'})
     }
+});
+
+router.delete('/', async (req, res) => {
+    console.log('Here at router.deleted')
+    console.log(req.body.id)
+    try {
+        let deleteAll = await AddedTodo.deleteMany({id: req.body.id});
+        res.status(200).json({message: 'All were deleted with id: 1'})
+    }
+    catch (err) {
+        console.log(err)
+    }
 })
 
 //EXPORT
