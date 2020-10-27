@@ -6,10 +6,13 @@ require('dotenv/config')
 const initialTodosRoutes = require('./backend/routes/InitialTodosRoutes');
 const addedTodosRoutes = require('./backend/routes/addedTodosRoutes');
 
-
+var corsOptions = {
+    origin: 'https://wyatt-todo-app.netlify.app/',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }
 
 const port = process.env.PORT || 3000
-app.use(cors());
+app.use(cors(corsOptions));
 
 //MIDDLEWARE: Functions that execute when routes are hit
 
