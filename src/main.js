@@ -18,7 +18,7 @@ let localData;
 let completed = [];
 
 async function getinitalTodos() {
-    const response = await fetch('http://localhost:3000/initialTodos');
+    const response = await fetch('https://todo-app-wyatt.herokuapp.com/initialTodos');
     const todos = await response.json();
     return todos;
 }
