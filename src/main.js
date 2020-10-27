@@ -31,7 +31,7 @@ getinitalTodos().then(todos => {
 });
 
 async function getCompletedTodos() {
-    const response  = await fetch('http://localhost:3000/addedTodos');
+    const response  = await fetch('https://todo-app-wyatt.herokuapp.com/addedTodos');
     const completedTodos = response.json();
     return completedTodos
 }
