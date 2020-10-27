@@ -18,7 +18,9 @@ let localData;
 let completed = [];
 
 async function getinitalTodos() {
-    const response = await fetch('https://todo-app-wyatt.herokuapp.com/initialTodos');
+    const response = await fetch('https://todo-app-wyatt.herokuapp.com/initialTodos', {
+        headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
+    });
     const todos = await response.json();
     return todos;
 }
@@ -31,7 +33,9 @@ getinitalTodos().then(todos => {
 });
 
 async function getCompletedTodos() {
-    const response  = await fetch('https://todo-app-wyatt.herokuapp.com/addedTodos');
+    const response  = await fetch('https://todo-app-wyatt.herokuapp.com/addedTodos', {
+        headers: { 'Access-Control-Allow-Orgin': 'Content-Type', 'Content-Type': 'application/json' },
+    });
     const completedTodos = response.json();
     return completedTodos
 }
