@@ -20,7 +20,7 @@ app.use(express.json());
 
 //ROUTES
 app.get('/', (req, res) => {
-    res.render('/src/index.html')
+    res.send('Working?')
 })
 app.use('/initialTodos', initialTodosRoutes);
 
